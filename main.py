@@ -19,6 +19,7 @@ A = [[a, f(a)] for a in np.arange(0, 50, step)]
 B = Integrator.integrate(A, step)
 
 
+# this is just the integral in function mode
 def F(u):
     v = int(u/step)
     return B[v][1]
@@ -48,25 +49,27 @@ p2.set_ylim([-1.1, 1.1])
 p2.set_xlim([0, 20])
 p1.grid()
 p2.grid()
-# and this will have the circle
+
+# this will have the integrator
 p3 = p[1, 1]
-# so it doesn't have axis
+# remove the axis
 p3.xaxis.set_ticklabels([])
 p3.yaxis.set_ticklabels([])
-# define the circle
+# the big disk
 r = 1
 angle = np.linspace(0, 2 * np.pi, 150)
 x = r * np.cos(angle)+0.5
 y = r * np.sin(angle)
 p3.plot(0.5, 0, '.', color='black')  # middle
 p3.plot(x, y, color='black')  # circle
-# define the wheel
-wheel = Rectangle((0.35, f(0)-0.05), 0.3, 0.1, fc='black')
-p3.add_patch(wheel)
-# define the point
-point, = p3.plot(0.5, f(0), '.', color='red')
-# define the line
+# line rotating on the big disk
 ln, = p3.plot([], [], '-', color='black')
+
+# the wheel
+wheel = Rectangle((0.4, f(0)-0.05), 0.2, 0.1, fc='black')
+p3.add_patch(wheel)
+# the line moving on the wheel
+line, = p3.plot([0.4, 0.4], [1, 0.9], '-', color='white')
 
 
 # to generate the frames
@@ -75,6 +78,15 @@ def gen():
     while h <= 50:
         yield h
         h += step
+
+
+# to determine how the point moves horizontally in the wheel
+def line_position(h):
+    # print(f(h))
+    #xp = line.get_data()[0][0]  # get the previous position
+    # xp = 0.4 + ((xp - 0.4) + f(h) / 10) % 1  # horizontally we add f(x)
+    position = 0.4 + (-2*np.sign(f(h))*h % 1)/5
+    return position
 
 
 def update(h):
@@ -91,26 +103,25 @@ def update(h):
     # p2.clear()  # if commented, stuff gets really psychedelic
     Fline, = p2.plot(x2, y2, 'r')  # well... this is plotting
 
-    # point
-    yp = f(h)  # vertically it's just f(x)
-    xp = 0.4 + (h % 1)/5
-    point.set_data(np.array([xp, yp]))
-
     # wheel
     wheel.set_y(f(h)-0.05)
 
-    # line
-    X0 = (r - 0.3) * np.cos(h) + 0.5
-    Y0 = (r - 0.3) * np.sin(h)
-    X1 = r * np.cos(h) + 0.5
-    Y1 = r * np.sin(h)
+    # line that makes wheel seem like its spinning
+    xp = line_position(h)
+    line.set_data([xp, xp], [f(h) + 0.04, f(h) - 0.04])
+
+    # line showing that the circle is moving
+    X0 = (r - 0.2) * np.cos(-h) + 0.5
+    Y0 = (r - 0.2) * np.sin(-h)
+    X1 = r * np.cos(-h) + 0.5
+    Y1 = r * np.sin(-h)
     ln.set_data([X0, X1], [Y0, Y1])
-    return point, ln, fline, Fline, wheel
+    return line, ln, fline, Fline, wheel
 
 
 # run the animation
 # blit is to optimize
 # interval is the interval between each step of the animation
-ani4 = FuncAnimation(fig, update, gen, blit=True, interval=40)
+ani4 = FuncAnimation(fig, update, gen, blit=True, interval=100)
 
 plt.show()
