@@ -11,7 +11,7 @@ step = 0.05
 
 
 def f(u):
-    return u/2 % 1  # math.cos(u)
+    return math.cos(u)
 
 
 # This create the integral of f
@@ -48,23 +48,17 @@ p[1, 2].axis('off')
 p1 = p[0, 0]
 p1.set_ylim([-1.1, 1.1])
 p1.set_xlabel('f(x)')
-p1.set_xlim([0, 20])
+# p1.set_xlim([0, 20])
 # F(x)
 p2 = p[0, 2]
 # p2.set_ylim([-1.1, 1.1])
 p2.set_xlabel('F(x)')
-p2.set_xlim([0, 20])
+# p2.set_xlim([0, 20])
 p1.grid()
 p2.grid()
 
 # this will have the integrator
 p3 = p[1, 1]
-# remove the axis
-p3.xaxis.set_visible(False)
-p3.yaxis.set_visible(False)
-for spine in ['top', 'right', 'left', 'bottom']:
-    p3.spines[spine].set_visible(False)
-
 # the big disk
 r = 1
 angle = np.linspace(0, 2 * np.pi, 150)
@@ -83,6 +77,18 @@ p3.add_patch(wheel)
 line, = p3.plot([0.4, 0.4], [1, 0.9], '-', color='white')
 
 
+# remove the axis
+p1.xaxis.set_visible(False)
+p1.yaxis.set_visible(False)
+p2.xaxis.set_visible(False)
+p2.yaxis.set_visible(False)
+
+p3.xaxis.set_visible(False)
+p3.yaxis.set_visible(False)
+for spine in ['top', 'right', 'left', 'bottom']:
+    p3.spines[spine].set_visible(False)
+
+
 # to generate the frames
 def gen():
     h = 0
@@ -94,9 +100,9 @@ def gen():
 # to determine how the point moves horizontally in the wheel
 def line_position(h):
     xp = line.get_data()[0][0] - 0.4  # get the previous position
-    # add f(h)/20 to move smoothly
+    # add f(h)/30 to move smoothly
     # % 0.2 is to back to the beginning of the wheel
-    position = 0.4 + ((xp - f(h)/20) % 0.2)
+    position = 0.4 + ((xp - f(h)/30) % 0.2)
     return position
 
 
