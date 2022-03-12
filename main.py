@@ -11,7 +11,7 @@ step = 0.05
 
 
 def f(u):
-    return math.cos(u)
+    return u/2 % 1  # math.cos(u)
 
 
 # This create the integral of f
@@ -24,6 +24,9 @@ def F(u):
     v = int(u/step)
     return B[v][1]
 
+
+# delta t of the simulation
+dt = 100
 
 # create empty lists for the x and y data
 x1, y1 = [], []
@@ -41,11 +44,15 @@ p[1, 0].axis('off')
 p[1, 2].axis('off')
 
 # these have the functions
+# f(x)
 p1 = p[0, 0]
 p1.set_ylim([-1.1, 1.1])
+p1.set_xlabel('f(x)')
 p1.set_xlim([0, 20])
+# F(x)
 p2 = p[0, 2]
-p2.set_ylim([-1.1, 1.1])
+# p2.set_ylim([-1.1, 1.1])
+p2.set_xlabel('F(x)')
 p2.set_xlim([0, 20])
 p1.grid()
 p2.grid()
@@ -53,8 +60,11 @@ p2.grid()
 # this will have the integrator
 p3 = p[1, 1]
 # remove the axis
-p3.xaxis.set_ticklabels([])
-p3.yaxis.set_ticklabels([])
+p3.xaxis.set_visible(False)
+p3.yaxis.set_visible(False)
+for spine in ['top', 'right', 'left', 'bottom']:
+    p3.spines[spine].set_visible(False)
+
 # the big disk
 r = 1
 angle = np.linspace(0, 2 * np.pi, 150)
@@ -62,6 +72,7 @@ x = r * np.cos(angle)+0.5
 y = r * np.sin(angle)
 p3.plot(0.5, 0, '.', color='black')  # middle
 p3.plot(x, y, color='black')  # circle
+# p3.plot([0.5, 0.5], [-1, 1], '-', color='black')  # vertical axis in the middle
 # line rotating on the big disk
 ln, = p3.plot([], [], '-', color='black')
 
@@ -82,10 +93,10 @@ def gen():
 
 # to determine how the point moves horizontally in the wheel
 def line_position(h):
-    # print(f(h))
-    #xp = line.get_data()[0][0]  # get the previous position
-    # xp = 0.4 + ((xp - 0.4) + f(h) / 10) % 1  # horizontally we add f(x)
-    position = 0.4 + (-2*np.sign(f(h))*h % 1)/5
+    xp = line.get_data()[0][0] - 0.4  # get the previous position
+    # add f(h)/20 to move smoothly
+    # % 0.2 is to back to the beginning of the wheel
+    position = 0.4 + ((xp - f(h)/20) % 0.2)
     return position
 
 
@@ -122,6 +133,6 @@ def update(h):
 # run the animation
 # blit is to optimize
 # interval is the interval between each step of the animation
-ani4 = FuncAnimation(fig, update, gen, blit=True, interval=100)
+ani = FuncAnimation(fig, update, gen, blit=True, interval=dt)
 
 plt.show()
