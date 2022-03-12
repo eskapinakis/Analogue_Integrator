@@ -54,8 +54,10 @@ p2 = p[0, 2]
 # p2.set_ylim([-1.1, 1.1])
 p2.set_xlabel('F(x)')
 # p2.set_xlim([0, 20])
-p1.grid()
-p2.grid()
+
+# to make a grid in the function subplots
+# p1.grid()
+# p2.grid()
 
 # this will have the integrator
 p3 = p[1, 1]
@@ -78,9 +80,9 @@ line, = p3.plot([0.4, 0.4], [1, 0.9], '-', color='white')
 
 
 # remove the axis
-p1.xaxis.set_visible(False)
+p1.xaxis.set_ticklabels([])
 p1.yaxis.set_visible(False)
-p2.xaxis.set_visible(False)
+p2.xaxis.set_ticklabels([])
 p2.yaxis.set_visible(False)
 
 p3.xaxis.set_visible(False)
