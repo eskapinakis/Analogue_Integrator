@@ -11,7 +11,8 @@ step = 0.05
 
 
 def f(u):
-    return math.cos(u)
+    return u/5 % 2 - 1
+    # return math.cos(u)
 
 
 # This create the integral of f
@@ -77,6 +78,8 @@ wheel = Rectangle((0.4, f(0)-0.05), 0.2, 0.1, fc='black')
 p3.add_patch(wheel)
 # the line moving on the wheel
 line, = p3.plot([0.4, 0.4], [1, 0.9], '-', color='white')
+# the line moving with the wheel
+line_f, = p3.plot([0, 0], [1, 0], '-', color='blue')
 
 
 # remove the axis
@@ -114,16 +117,19 @@ def update(h):
     y1.append(f(h))  # the x and y values
 
     # p1.clear()  # if commented, stuff gets really psychedelic
-    fline, = p1.plot(x1, y1, 'b')  # well... this is plotting
+    fx, = p1.plot(x1, y1, 'b')  # well... this is plotting
 
     # F(x)
     x2.append(h)
     y2.append(F(h))  # the x and y values
     # p2.clear()  # if commented, stuff gets really psychedelic
-    Fline, = p2.plot(x2, y2, 'r')  # well... this is plotting
+    Fx, = p2.plot(x2, y2, 'r')  # well... this is plotting
 
     # wheel
     wheel.set_y(f(h)-0.05)
+
+    # line that moves with f(x)
+    line_f.set_data([-1, 0.38], [f(h), f(h)])
 
     # line that makes wheel seem like its spinning
     xp = line_position(h)
@@ -135,7 +141,7 @@ def update(h):
     X1 = r * np.cos(-h) + 0.5
     Y1 = r * np.sin(-h)
     ln.set_data([X0, X1], [Y0, Y1])
-    return line, ln, fline, Fline, wheel
+    return line, ln, fx, Fx, wheel, line_f
 
 
 # run the animation
